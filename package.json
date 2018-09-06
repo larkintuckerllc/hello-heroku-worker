@@ -11,7 +11,8 @@
     "serve": "node dist/server.js",
     "test": "jest src",
     "watch-node": "nodemon dist/server.js",
-    "watch-ts": "tsc -w"
+    "watch-ts": "tsc -w",
+    "worker": "node dist/worker.js"
   },
   "author": "",
   "license": "ISC",
@@ -46,8 +47,10 @@
   },
   "dependencies": {
     "@types/express": "^4.16.0",
+    "@types/kue": "^0.11.9",
     "@types/pg": "^7.4.10",
     "express": "^4.16.3",
+    "kue": "^0.11.6",
     "pg": "^7.4.3"
   }
 }

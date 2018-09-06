@@ -1,4 +1,5 @@
 import express from 'express';
+import kue from 'kue';
 import { Client } from 'pg';
 
 const { DATABASE_URL } = process.env;
@@ -6,6 +7,7 @@ const client = new Client({
   connectionString: DATABASE_URL,
 });
 const app = express();
+const queue = kue.createQueue();
 app.get('/', (_, res) => {
   client
     .connect()
@@ -17,6 +19,26 @@ app.get('/', (_, res) => {
     .catch(() => {
       res.send('ERROR');
       client.end();
+    });
+});
+app.get('/intense', (_, res) => {
+  const job = queue
+    .create('mytype', {
+      letter: 'a',
+      title: 'mytitle',
+    })
+    .removeOnComplete(true)
+    .save((err: any) => {
+      if (err) {
+        res.send('error');
+        return;
+      }
+      job.on('complete', result => {
+        res.send(`Hello Intense ${result}`);
+      });
+      job.on('failed', () => {
+        res.send('error');
+      });
     });
 });
 export default app;
