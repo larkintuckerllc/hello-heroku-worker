@@ -1,0 +1,24 @@
+{
+  "name": "hello-heroku-ts",
+  "scripts": {
+    "postdeploy": "psql $DATABASE_URL -f seed.sql"
+  },
+  "env": {
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [{
+    "plan": "heroku-postgresql:hobby-dev",
+    "options": {
+      "version": "10"
+    }
+  }],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
