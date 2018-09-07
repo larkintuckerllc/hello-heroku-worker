@@ -2,12 +2,14 @@ import express from 'express';
 import kue from 'kue';
 import { Client } from 'pg';
 
-const { DATABASE_URL } = process.env;
+const { DATABASE_URL, REDIS_URL } = process.env;
 const client = new Client({
   connectionString: DATABASE_URL,
 });
 const app = express();
-const queue = kue.createQueue();
+const queue = kue.createQueue({
+  redis: REDIS_URL,
+});
 app.get('/', (_, res) => {
   client
     .connect()
