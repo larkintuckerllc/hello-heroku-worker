@@ -1,27 +1,21 @@
 import express from 'express';
-import kue from 'kue';
+import { Queue } from 'kue';
 import { Client } from 'pg';
 
-const { DATABASE_URL, REDIS_URL } = process.env;
-const client = new Client({
-  connectionString: DATABASE_URL,
-});
 const app = express();
-const queue = kue.createQueue({
-  redis: REDIS_URL,
-});
-app.get('/', (_, res) => {
-  client
-    .connect()
-    .then(() => client.query('SELECT * FROM hellotable'))
-    .then(result => {
-      res.send(`${result.rows[0].name} Success Redis\n`);
-      client.end();
-    })
-    .catch(() => {
-      res.send('ERROR');
-      client.end();
-    });
+let client: Client;
+let queue: Queue;
+export const initialize = (pClient: Client, pQueue: Queue) => {
+  client = pClient;
+  queue = pQueue;
+};
+app.get('/', async (_, res, next) => {
+  try {
+    const result = await client.query('SELECT * FROM hellotable');
+    res.send(`${result.rows[0].name} Success Redis\n`);
+  } catch (error) {
+    next(error);
+  }
 });
 app.get('/intense', (_, res) => {
   const job = queue
