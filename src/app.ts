@@ -15,7 +15,7 @@ app.get('/', (_, res) => {
     .connect()
     .then(() => client.query('SELECT * FROM hellotable'))
     .then(result => {
-      res.send(`${result.rows[0].name} Success\n`);
+      res.send(`${result.rows[0].name} Success Redis\n`);
       client.end();
     })
     .catch(() => {
