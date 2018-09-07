@@ -17,23 +17,24 @@ app.get('/', async (_, res, next) => {
     next(error);
   }
 });
-app.get('/intense', (_, res) => {
+app.get('/intense', (_, res, next) => {
   const job = queue
     .create('mytype', {
       letter: 'a',
       title: 'mytitle',
     })
     .removeOnComplete(true)
-    .save((err: any) => {
-      if (err) {
-        res.send('error');
+    .save((error: any) => {
+      if (error) {
+        next(error);
         return;
       }
       job.on('complete', result => {
         res.send(`Hello Intense ${result}`);
       });
       job.on('failed', () => {
-        res.send('error');
+        const failedError = new Error('failed');
+        next(failedError);
       });
     });
 });
